@@ -6,34 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
-### Added
-
-- Works with any default browser. Retab remembers the browser it replaces as the default and opens every link there.
-- Switching to open tabs in Brave, Microsoft Edge, Vivaldi, Chromium, and Safari, alongside Google Chrome.
-- **Pause Retab / Resume Retab** menu item. While paused, links open in a new tab and the menu bar icon dims.
-
-### Changed
-
-- On first launch, Retab asks macOS to make it the default browser, so setup is one click on the macOS prompt.
-- Replaced the **Set as Default Browser** menu item with a **Retab Isn't Handling Links** warning that appears only when Retab isn't the default browser.
-- Problems that need action, such as a missing Automation permission, show an alert.
-
-### Removed
-
-- The status line at the top of the menu. Retab stays silent when a link works.
-
 ## [1.0.0] - 2026-11-14
 
 ### Added
 
-- Menu bar app that focuses an already-open Google Chrome tab instead of opening a duplicate.
-- Opens links in a new Chrome tab when no matching tab is open.
+- Menu bar app that switches to an already-open browser tab instead of opening a duplicate.
+- Works with any default browser. Retab remembers the browser it replaces as the default and opens every link there.
+- Switches to open tabs in Google Chrome, Brave, Microsoft Edge, Vivaldi, Chromium, and Safari. Other browsers, such as Firefox, get a new tab.
+- Opens links in a new tab when no matching tab is open.
 - Matching ignores tracking parameters (`utm_*`, `fbclid`, and others) and `#fragments`.
-- **Set as Default Browser** menu item to set Retab as the default browser for http and https.
+- On first launch, asks macOS to make Retab the default browser, so setup is one click on the macOS prompt.
+- **Retab Isn't Handling Links** menu item that appears only when Retab isn't the default browser.
+- **Pause Retab / Resume Retab** menu item. While paused, links open in a new tab and the menu bar icon dims.
 - **Launch at Login** option.
-- Status line that reports the result of the last link.
+- Alerts only for problems that need action, such as a missing Automation permission.
 - `scripts/build-app.sh` to build the app bundle and a drag-to-Applications disk image.
-- Unit tests for URL matching.
+- Unit tests for URL matching and the supported browser list.
 
 [Unreleased]: https://github.com/jagoncalves14/retab/compare/v1.0.0...HEAD
 [1.0.0]: https://github.com/jagoncalves14/retab/releases/tag/v1.0.0
