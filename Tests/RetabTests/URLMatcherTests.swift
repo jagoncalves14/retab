@@ -3,11 +3,11 @@ import XCTest
 
 final class URLMatcherTests: XCTestCase {
 
-    private func tab(_ url: String, index: Int = 1) -> ChromeTab {
-        ChromeTab(window: 1, tab: index, url: url)
+    private func tab(_ url: String, index: Int = 1) -> BrowserTab {
+        BrowserTab(window: 1, tab: index, url: url)
     }
 
-    private func match(_ link: String, against urls: [String]) -> ChromeTab? {
+    private func match(_ link: String, against urls: [String]) -> BrowserTab? {
         let tabs = urls.enumerated().map { tab($0.element, index: $0.offset + 1) }
         return URLMatcher.firstMatch(for: URL(string: link)!, in: tabs)
     }

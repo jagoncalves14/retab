@@ -23,7 +23,7 @@
 	<key>LSUIElement</key>
 	<true/>
 	<key>NSAppleEventsUsageDescription</key>
-	<string>Retab controls Google Chrome to focus tabs that are already open.</string>
+	<string>Retab controls your browser to switch to tabs that are already open.</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>

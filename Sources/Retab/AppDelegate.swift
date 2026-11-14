@@ -3,16 +3,21 @@ import OSLog
 import ServiceManagement
 
 @MainActor
-final class AppDelegate: NSObject, NSApplicationDelegate {
+final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private static let logger = Logger(subsystem: "app.retab.macos", category: "default-browser")
 
     private var statusItem: NSStatusItem?
-    private let statusMenuItem = NSMenuItem(title: "Ready", action: nil, keyEquivalent: "")
-    private let defaultBrowserItem = NSMenuItem(
-        title: "Set as Default Browser",
-        action: #selector(useAsDefaultBrowser),
+    /// The Automation alert shows once per launch, so a denied permission doesn't nag on every link.
+    private var hasShownAutomationAlert = false
+
+    private let pauseItem = NSMenuItem(title: "Pause Retab", action: #selector(togglePause), keyEquivalent: "")
+    /// Shown only while Retab isn't the default browser, which means no links reach it.
+    private let notHandlingLinksItem = NSMenuItem(
+        title: "Retab Isn't Handling Links",
+        action: #selector(fixLinkHandling),
         keyEquivalent: ""
     )
+    private let notHandlingLinksSeparator = NSMenuItem.separator()
     private let launchAtLoginItem = NSMenuItem(
         title: "Launch at Login",
         action: #selector(toggleLaunchAtLogin),
@@ -27,8 +32,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         item.menu = makeMenu()
         statusItem = item
-        setStatus("Ready", symbol: "checkmark.circle")
-        refreshLaunchAtLoginState()
+        rememberCurrentDefaultBrowser()
+        refreshMenuState()
+
+        // First launch: ask macOS straight away, so setup is a single click on its prompt.
+        // Only once: if the user keeps their browser, the menu offers the fix instead of asking again.
+        if !isDefaultBrowser() && !Preferences.hasRequestedDefaultBrowser {
+            Preferences.hasRequestedDefaultBrowser = true
+            requestDefaultBrowser(alertsOnFailure: false)
+        }
     }
 
     /// macOS calls this for every http/https link once Retab is the default handler.
@@ -38,16 +50,24 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
+    // MARK: - Menu
+
     private func makeMenu() -> NSMenu {
         let menu = NSMenu()
+        menu.delegate = self
 
-        statusMenuItem.isEnabled = false
-        menu.addItem(statusMenuItem)
+        notHandlingLinksItem.target = self
+        notHandlingLinksItem.image = symbol("exclamationmark.triangle")
+        notHandlingLinksItem.toolTip = "Make Retab your default browser so links reach it"
+        if #available(macOS 14.4, *) {
+            notHandlingLinksItem.subtitle = "Click to fix"
+        }
+        menu.addItem(notHandlingLinksItem)
+        menu.addItem(notHandlingLinksSeparator)
+
+        pauseItem.target = self
+        menu.addItem(pauseItem)
         menu.addItem(.separator())
-
-        defaultBrowserItem.target = self
-        defaultBrowserItem.image = symbol("globe")
-        menu.addItem(defaultBrowserItem)
 
         launchAtLoginItem.target = self
         launchAtLoginItem.image = symbol("sunrise")
@@ -64,14 +84,58 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         return menu
     }
 
-    @objc private func useAsDefaultBrowser() {
+    /// Refreshes the menu each time it opens, so changes made in System Settings show up.
+    func menuWillOpen(_ menu: NSMenu) {
+        rememberCurrentDefaultBrowser()
+        refreshMenuState()
+    }
+
+    private func refreshMenuState() {
+        refreshPauseState()
+        refreshLinkHandlingState()
+        launchAtLoginItem.state = SMAppService.mainApp.status == .enabled ? .on : .off
+    }
+
+    // MARK: - Pause
+
+    @objc private func togglePause() {
+        Preferences.isPaused.toggle()
+        refreshPauseState()
+    }
+
+    /// Paused: the menu offers Resume and the menu bar icon dims.
+    private func refreshPauseState() {
+        let isPaused = Preferences.isPaused
+        pauseItem.title = isPaused ? "Resume Retab" : "Pause Retab"
+        pauseItem.image = symbol(isPaused ? "play.circle" : "pause.circle")
+        statusItem?.button?.appearsDisabled = isPaused
+        statusItem?.button?.toolTip = isPaused ? "Retab is paused" : "Retab"
+    }
+
+    // MARK: - Default browser
+
+    private func refreshLinkHandlingState() {
+        let isHandlingLinks = isDefaultBrowser()
+        notHandlingLinksItem.isHidden = isHandlingLinks
+        notHandlingLinksSeparator.isHidden = isHandlingLinks
+    }
+
+    @objc private func fixLinkHandling() {
+        requestDefaultBrowser(alertsOnFailure: true)
+    }
+
+    /// Asks macOS to make Retab the default browser. macOS shows its own confirmation prompt.
+    private func requestDefaultBrowser(alertsOnFailure: Bool) {
         let appURL = Bundle.main.bundleURL
         Task { @MainActor in
-            // Already the handler: nothing to change, so don't report an error.
+            // Already the handler: nothing to change.
             if isDefaultBrowser() {
-                setStatus("Retab handles web links", symbol: "checkmark.circle")
+                refreshLinkHandlingState()
                 return
             }
+
+            // Note the browser Retab is replacing: links keep opening there.
+            rememberCurrentDefaultBrowser()
 
             do {
                 for scheme in ["http", "https"] {
@@ -85,15 +149,27 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             }
 
             // Judge the result by what macOS reports now, not by whether the call threw.
-            if isDefaultBrowser() {
-                setStatus("Retab handles web links", symbol: "checkmark.circle")
-            } else {
-                setStatus(
-                    "Choose Retab in System Settings → Desktop & Dock → Default web browser",
-                    symbol: "exclamationmark.triangle"
+            refreshLinkHandlingState()
+            if !isDefaultBrowser() && alertsOnFailure {
+                showAlert(
+                    "Retab isn't handling links yet",
+                    detail: "Choose Retab in System Settings → Desktop & Dock → Default web browser. Your links will still open in your browser."
                 )
             }
         }
+    }
+
+    /// While Retab isn't the default browser, the system's default is the user's real browser.
+    /// Remember it, so links open there once Retab takes over. Following it on every menu
+    /// open means a browser change made in System Settings carries over.
+    private func rememberCurrentDefaultBrowser() {
+        guard let sample = URL(string: "https://example.com"),
+              let handlerURL = NSWorkspace.shared.urlForApplication(toOpen: sample),
+              let handlerID = Bundle(url: handlerURL)?.bundleIdentifier,
+              handlerID != Bundle.main.bundleIdentifier else {
+            return
+        }
+        Preferences.defaultBrowserBundleIdentifier = handlerID
     }
 
     /// True when macOS routes both http and https links to this app.
@@ -109,6 +185,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
+    // MARK: - Launch at login
+
     @objc private func toggleLaunchAtLogin() {
         do {
             if SMAppService.mainApp.status == .enabled {
@@ -118,32 +196,42 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             }
         } catch {
             Self.logger.error("Changing Launch at Login failed: \(error.localizedDescription, privacy: .public)")
-            setStatus("Could not change Launch at Login", symbol: "exclamationmark.triangle")
+            showAlert("Couldn't change Launch at Login", detail: error.localizedDescription)
         }
-        refreshLaunchAtLoginState()
-    }
-
-    private func refreshLaunchAtLoginState() {
         launchAtLoginItem.state = SMAppService.mainApp.status == .enabled ? .on : .off
     }
 
+    // MARK: - Feedback
+
+    /// Successful links need no feedback: the browser coming forward is the feedback.
+    /// Only problems the user has to act on show an alert.
     private func report(_ outcome: LinkOutcome) {
         switch outcome {
-        case .focusedExistingTab:
-            setStatus("Focused existing Chrome tab", symbol: "rectangle.on.rectangle")
-        case .openedNewTab:
-            setStatus("Opened in new Chrome tab", symbol: "plus.rectangle")
-        case .openedWithoutAutomation:
-            setStatus("Allow Retab to control Chrome in System Settings", symbol: "lock.shield")
+        case .focusedExistingTab, .openedNewTab:
+            break
+        case .openedWithoutAutomation(let browserName):
+            guard !hasShownAutomationAlert else { return }
+            hasShownAutomationAlert = true
+            showAlert(
+                "Allow Retab to control \(browserName)",
+                detail: "Until you do, links open in a new tab. Turn on \(browserName) in System Settings → Privacy & Security → Automation → Retab."
+            )
         case .failed(let message):
-            setStatus(message, symbol: "exclamationmark.triangle")
+            showAlert(message, detail: nil)
         }
     }
 
-    private func setStatus(_ title: String, symbol name: String) {
-        statusMenuItem.title = title
-        statusMenuItem.image = symbol(name)
+    private func showAlert(_ title: String, detail: String?) {
+        let alert = NSAlert()
+        alert.messageText = title
+        alert.informativeText = detail ?? ""
+        alert.alertStyle = .warning
+        // A menu bar app has no window in front, so bring the alert forward.
+        NSApp.activate(ignoringOtherApps: true)
+        alert.runModal()
     }
+
+    // MARK: - Images
 
     /// The brand mark for the menu bar: a vector PDF template loaded from the app bundle,
     /// so it stays sharp at every scale. Falls back to an SF Symbol if the asset is missing.
