@@ -1,0 +1,41 @@
+name: Feature request
+description: Suggest an improvement to Retab
+title: "[Feature] "
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Retab is intentionally focused on one job: preventing duplicate Google Chrome tabs. Requests that fit that focus are the easiest to accept.
+
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope
+      options:
+        - label: I searched existing issues and didn't find a duplicate.
+          required: true
+        - label: This request is about preventing duplicate or unwanted Chrome tabs, or otherwise improving link handling.
+          required: false
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What are you trying to do, and what gets in the way?
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+    validations:
+      required: false

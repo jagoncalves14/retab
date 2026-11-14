@@ -1,0 +1,88 @@
+name: Bug report
+description: Report something that isn't working as expected
+title: "[Bug] "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug. Please remove any private information from links and screenshots before submitting.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before you submit
+      options:
+        - label: I searched existing issues and didn't find a duplicate.
+          required: true
+        - label: I'm using the latest release of Retab.
+          required: true
+
+  - type: input
+    id: retab-version
+    attributes:
+      label: Retab version
+      description: Shown in the release you installed, for example 1.0.0.
+      placeholder: "1.0.0"
+    validations:
+      required: true
+
+  - type: input
+    id: macos-version
+    attributes:
+      label: macOS version
+      description: Apple menu → About This Mac.
+      placeholder: "macOS 15.4 (Apple silicon)"
+    validations:
+      required: true
+
+  - type: input
+    id: chrome-version
+    attributes:
+      label: Google Chrome version
+      description: Open chrome://version in Chrome.
+      placeholder: "137.0.0.0"
+    validations:
+      required: true
+
+  - type: input
+    id: source-app
+    attributes:
+      label: App that sent the link
+      placeholder: "Slack, Mail, T3 Code, …"
+    validations:
+      required: false
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open https://example.com/page in Chrome
+        2. Click a link to it in Slack
+        3. …
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Include the status line text from the Retab menu if it shows one.
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Screenshots, the URL pattern (with private parts removed), or anything else that helps.
+    validations:
+      required: false

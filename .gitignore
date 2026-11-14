@@ -1,0 +1,31 @@
+# Swift Package Manager
+.build/
+.swiftpm/
+*.o
+*.swiftmodule
+
+# Build output
+build/
+*.app
+*.dmg
+
+# Xcode
+DerivedData/
+xcuserdata/
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
+
+# macOS
+.DS_Store
+._*
+.AppleDouble
+.LSOverride
+
+# Logs and temporary files
+*.log
+tmp/
+
+# Local tooling and agent context (not part of the project)
+.claude/
+.glaze_memory/
