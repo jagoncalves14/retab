@@ -19,5 +19,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - `scripts/build-app.sh` to build the app bundle and a drag-to-Applications disk image.
 - Unit tests for URL matching.
 
-[Unreleased]: https://github.com/YOUR-USERNAME/Retab/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/YOUR-USERNAME/Retab/releases/tag/v1.0.0
+[Unreleased]: https://github.com/jagoncalves14/retab/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/jagoncalves14/retab/releases/tag/v1.0.0

@@ -15,7 +15,7 @@ Only the latest release receives security fixes.
 
 Report them privately using GitHub's private vulnerability reporting:
 
-<https://github.com/YOUR-USERNAME/Retab/security/advisories/new>
+<https://github.com/jagoncalves14/retab/security/advisories/new>
 
 Include as much of the following as you can:
 

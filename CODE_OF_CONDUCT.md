@@ -26,7 +26,7 @@ Project maintainers are responsible for clarifying and enforcing these standards
 
 ## Reporting
 
-Report unacceptable behavior to the maintainers through a private message on GitHub to [@YOUR-USERNAME](https://github.com/YOUR-USERNAME). All complaints will be reviewed and investigated promptly and fairly. Maintainers will keep the identity of the reporter confidential where possible.
+Report unacceptable behavior to the maintainers through a private message on GitHub to [@jagoncalves14](https://github.com/jagoncalves14). All complaints will be reviewed and investigated promptly and fairly. Maintainers will keep the identity of the reporter confidential where possible.
 
 ## Enforcement guidelines
 

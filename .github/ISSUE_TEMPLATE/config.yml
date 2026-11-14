@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
   - name: Report a security vulnerability
-    url: https://github.com/YOUR-USERNAME/Retab/security/advisories/new
+    url: https://github.com/jagoncalves14/retab/security/advisories/new
     about: Please report security issues privately rather than in a public issue.
   - name: Help and troubleshooting
-    url: https://github.com/YOUR-USERNAME/Retab/blob/main/README.md#troubleshooting
+    url: https://github.com/jagoncalves14/retab/blob/main/README.md#troubleshooting
     about: Check the troubleshooting guide before filing a bug.

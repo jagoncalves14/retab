@@ -1,7 +1,7 @@
 # Retab
 
-[![Release](https://img.shields.io/github/v/release/YOUR-USERNAME/Retab?label=release)](https://github.com/YOUR-USERNAME/Retab/releases/latest)
-[![CI](https://github.com/YOUR-USERNAME/Retab/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR-USERNAME/Retab/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/jagoncalves14/retab?label=release)](https://github.com/jagoncalves14/retab/releases/latest)
+[![CI](https://github.com/jagoncalves14/retab/actions/workflows/ci.yml/badge.svg)](https://github.com/jagoncalves14/retab/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![Platform](https://img.shields.io/badge/platform-macOS%2013%2B-lightgrey)
 ![Swift](https://img.shields.io/badge/Swift-5.9%2B-orange)
@@ -14,7 +14,7 @@ Retab is a menu bar utility. It has no Dock icon, no windows, and no Cmd+Tab ent
 
 ## Download
 
-**[Download Retab.dmg](https://github.com/YOUR-USERNAME/Retab/releases/latest/download/Retab.dmg)**
+**[Download Retab.dmg](https://github.com/jagoncalves14/retab/releases/latest/download/Retab.dmg)**
 
 Requires macOS 13 (Ventura) or later and Google Chrome. Every release lists a SHA-256 checksum you can use to verify the download.
 
@@ -22,8 +22,8 @@ Requires macOS 13 (Ventura) or later and Google Chrome. Every release lists a SH
 
 1. Open `Retab.dmg`.
 2. Drag **Retab** onto the **Applications** folder.
-3. Open Retab from Applications. A link icon appears in the menu bar.
-4. Click the link icon and choose **Set as Default Browser**. Approve the macOS prompt.
+3. Open Retab from Applications. A tab icon appears in the menu bar.
+4. Click the tab icon and choose **Set as Default Browser**. Approve the macOS prompt.
 5. The first time a link arrives, approve the prompt that lets Retab control Google Chrome.
 
 ### First launch warning
